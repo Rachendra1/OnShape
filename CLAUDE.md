@@ -16,6 +16,7 @@ document, what is in it, and the cleanup recommendations.
 - The key is **read-only**. Do not attempt writes; propose changes for Trevor to make
   in Onshape (or ask him for a write-enabled key).
 - Never delete, merge or overwrite anything in Onshape without Trevor's explicit OK.
+- Gulbasaurus (and anything else of Enna's) is off-limits: no changes or cleanup suggestions.
 
 ## Useful endpoints (base `https://cad.onshape.com/api/v10`)
 

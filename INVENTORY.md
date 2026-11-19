@@ -40,8 +40,8 @@ editable model these parts may need to be remodeled as native features.
 | Cabinets | `3e1ef31fbbad4a6a0d49fbc1` | 2025-11-25 | Full room: 26 named parts (cabinets, appliances, counters, lights) |
 | Wall | `049dd78c6cfd4b5a1234e1e8` | 2025-12-06 | Wall, Shelving, CounterTop, Cabinet studios; variables |
 
-**Recommendation:** Ask Trevor whether these are the same room. If so, merge into one doc.
-Otherwise keep both and rename them clearly.
+**Decision (Trevor, 2026-11-19):** Old project, no longer needed. **Archive both**
+(move them to an `Archive` folder). No review or merge needed.
 
 ## Standalone projects (no duplicates)
 | Doc | ID | Last edit | Versions | Notes |
@@ -49,6 +49,7 @@ Otherwise keep both and rename them clearly.
 | Template - Drills | `5701b1312b7fbdbe4e0193b5` | 2026-01-12 | Start, V1, V2, V3 | ⚠️ **Branch `B1` (edited 01-12) is newer than `Main` (01-09).** Work may be stranded on B1; review and merge into Main. Contents are drawer and door handles/knobs, so the name doesn't fit; consider renaming |
 | MakaylasPresent | `74ad69d9b4bf0ff703752d44` | 2025-12-19 | Start, V3, V4 | 1 part, 2 drawings, variables. Looks finished |
 | Kuggis Shelf | `42847d9d152b50fb60843d72` | 2025-11-06 | Start, V1 | Small and Large inserts with stacked assemblies |
+| Gulbasaurus | `849157e8704ec732ffe045c3` | 2025-10-08 | Start | 🔒 **Enna's. Leave it alone: don't modify, archive, rename or recommend changes.** |
 | Boomer phone stand - Copy | `bf1bd8d19d5b57a5b086aaaf` | 2025-12-19 | Start | Copy of someone else's public doc (original isn't Trevor's); rename it to drop "- Copy" |
 
 ## Throwaway / empty: archive or delete
@@ -56,7 +57,6 @@ Otherwise keep both and rename them clearly.
 |---|---|---|
 | Assembly_BellSilverware | `fdec9fd523912a313be13a59` | 0 parts. Empty; ask whether it was meant to be something |
 | Untitled document | `f84e4146cdb7197e2349caaa` | 0 parts |
-| Gulbasaurus | `849157e8704ec732ffe045c3` | 1 part, never versioned; ask |
 | experiment number one | `de20480606050eab5f5f0151` | Learning exercise |
 | try one | `2c83dc0b9a53e80407df857b` | Learning exercise |
 
@@ -69,6 +69,9 @@ Otherwise keep both and rename them clearly.
 
 ## Open questions for Trevor
 - Which models are top priority to finish, and what does "done" mean for each (print, drawing, fit check)?
-- Are Cabinets and Wall the same room?
 - What is on the `B1` branch of Template - Drills that isn't in Main?
-- Gulbasaurus and Assembly_BellSilverware: keep or drop?
+- Assembly_BellSilverware: keep or drop?
+
+## Decisions made
+- 2026-11-19: Cabinets and Wall are an old project → archive.
+- 2026-11-19: Gulbasaurus belongs to Enna → leave untouched. Treat anything else of Enna's the same way.
