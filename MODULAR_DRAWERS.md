@@ -69,6 +69,33 @@ STL export works through the read-only API key at any `DividerLength`
 5. **Later (the fun part)**: a Feature Studio custom feature that takes a layout sketch and generates
    every piece, or a Bethany's Drawer assembly that's actually mated as a visual check.
 
+## Bethany's drawer: the hand-drawn layout (photos 2026-11-19)
+
+Encoded in `drawers/bethany_layout.py` (run it for the parts list; `drawers/bethany_layout.png` is
+the layout drawn back). Every count matches Trevor's tally on the sketch:
+
+- Border: 28B x3, 35B x4, 42B x6, 49B, 63B, 126B, 168B, 196B, 224B, 252B (20 pieces)
+- Interior: 21, 28 x3, 35 x4, 42 x6, 56, 77, 154 x2, 168 x3, 196 x8 (7 + the bent one), 224 (30 pieces)
+- Connectors: BL x4, BT x16, T x12, plus the special spots below
+- Assembled frame outside: **474.4 x 453.4 mm** (south wall x west wall). Nothing over 256 mm,
+  so no straight joiners are needed.
+- Material: about 820 cm3 of plastic, roughly **1 kg of PLA**.
+
+Three spots the current parts can't build:
+
+1. **"196 L?" bent divider** (from the 35B/42B border-T on the south wall): jogs 7 mm over its length.
+   The Bend studios don't make a solid yet. Straightening it costs nothing: move that border T
+   7 mm (swap the 35B and 42B on the south wall, or the 42 and 35 in the row above). Same parts list.
+2. **"TT"** (where the 224 from the north wall meets the 196 from the south wall): two Ts 14 mm
+   apart, so the divider between them would be 0 mm. Fix: one custom "double T" = two TConnectors
+   fused end to end (a 10-minute Part Studio: derive TConnector twice, rotate one 180°, move 14 mm,
+   union). Or move the 224 over 14 mm so it becomes a standard X (north wall 49B/28B -> 35B/42B,
+   east-side 28 -> 42).
+3. **"T L T" step** (end of the 21, under the two 154s): the lines are 21 mm apart one way and
+   14 mm the other, leaving 0 mm and 7 mm gaps; dividers need at least ~19 mm (plugs go 9.3 mm in
+   each end). Fix: one custom "step" connector (both Ts plus a short solid bar between them), or
+   rework that corner of the layout.
+
 ## Needed from Trevor
 
 - Pictures of the design, with compartment sizes (or which ones are equal).
