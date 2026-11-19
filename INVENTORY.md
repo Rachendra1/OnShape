@@ -14,6 +14,8 @@ These recommendations are proposals only; nothing has been changed in Onshape.
 | ModularDrawersChatGPT | `93c066e8868e2324be9971fd` | 2025-10-20 | 2026-07-26 | Start, V2, V2 (duplicate name), V3, V4 | Older line of the same design |
 | ModularDrawers | `9503c2c8a1eb860fdb39e29c` | 2025-10-19 | 2025-10-20 | Start, V1 | First attempt; different approach (Feature Studio, "_old" tabs) |
 
+See `MODULAR_DRAWERS.md` for a full review of how the parts work.
+
 **Recommendation:** Treat **ModularDrawers - Claude** as the master; rename it to "Modular Drawers".
 Confirm nothing in the ChatGPT doc's Main is missing from it, then archive the other two
 (move them to an "Archive" folder; no need to delete). The "Claude" doc also has
