@@ -96,7 +96,28 @@ Three spots the current parts can't build:
    each end). Fix: one custom "step" connector (both Ts plus a short solid bar between them), or
    rework that corner of the layout.
 
-## Needed from Trevor
+### Decisions (Trevor, 2026-11-19)
+- The bend stays: large spoons go on each side of it. Built as `Divider_196mm_BENT_x1`
+  (7 mm S-jog over the middle 49 mm).
+- TT and the step: custom fused connectors (`Custom_DoubleT`, `Custom_Step`).
+- Drawer measured, frame fits. 20 mm height is right. The wavy line was just freehand.
+- Full print set: `drawers/print/`, list in `drawers/PRINT_LIST.md`.
+
+### Why the Bend tabs never made a part
+- **Bend**: the rollback bar sits at feature 16 of 41, so the lofts never run.
+- **Bend2**: its final Loft fails, leaving only a curve. Lofting through 7-9 section sketches is fragile.
+
+### Doing the bend natively in Onshape (later, so the master lives in Onshape)
+1. New Part Studio "BentDivider", configuration inputs DividerLength, JogOffset (7 mm), JogLength (49 mm).
+2. Sketch the centreline on Top: straight line, two tangent arcs forming the S, straight line.
+   Arc radius = (JogLength² + JogOffset²) / (4 x JogOffset), which is 87.5 mm for 49/7. Keep the
+   straight ends at least 10 mm so the plug sockets are straight.
+3. Sweep the divider profile (from the Profile tab) along that path.
+4. Cut the sockets exactly like the Divider tab: derive MaleConnector at each end, Move face by
+   `gap_top`, Boolean subtract with offset `gap`.
+The custom connectors are just Derive (TConnector x2, or T + Corner + T) + Transform + Boolean union.
+
+## Needed from Trevor (answered 2026-11-19, kept for reference)
 
 - Pictures of the design, with compartment sizes (or which ones are equal).
 - Drawer **inside** width, depth and height (dividers are 20 mm tall; is that right for this drawer?).
