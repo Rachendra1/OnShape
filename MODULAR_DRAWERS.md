@@ -146,3 +146,11 @@ Changed tabs (one feature added at the end of each):
 Checks: the bent divider's ends match the straight Divider exactly; volumes of the double T (7.39 cm3)
 and step (10.72 cm3) match the mesh versions; the assembly is 474.44 x 453.44 x 20 mm; BOM = 84 pieces,
 matching the tally. How-to for Trevor: `drawers/HOWTO_ONSHAPE.md`.
+
+## Parked: lowered middle (2026-11-20)
+Trevor's old Bend tab had a "Lowered" option (dip the divider's height for easier reach). Not built;
+Trevor is moving ahead without it and may revisit. Plan if we do: a separate "Lower" custom feature
+in Drawer Features, run after the S-bend: split out the low stretch, scale it in Z only, loft short
+ramps back to full height (two same-shape sections, so the loft is reliable). Works on bent or straight
+dividers and can overlap the bend; must stay ~10 mm clear of the plug sockets. At 20 mm tall there's
+only ~6-8 mm to take off, so print a test piece first.
