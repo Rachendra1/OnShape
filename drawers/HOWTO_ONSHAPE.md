@@ -62,6 +62,13 @@ These live in the **Drawer Features** Feature Studio (FeatureScript; the source 
 - **Place body**: rotate about Z, then move, optionally a copy and optionally trimmed. *DoubleTConnector*
   and *StepConnector* are Derive → Place body → Boolean union, nothing else.
 - **Name by length**: described above.
+- **Lower middle**: dips a divider's middle down by a set amount with sloped ramps. It cuts the
+  divider across in four places, sinks the middle piece, rebuilds each ramp by sliding the end's own
+  cross-section down a slope, fuses, and trims whatever went below the floor. *LoweredDivider* and
+  *LoweredBentDivider* = Derive → Lower middle (`#LowerDrop`, `#LowFraction`, `#RampFraction`).
+  Bend first, lower second: two simple steps instead of one loft that tries to do both. Because the
+  section is lowered rather than reshaped, the base gets a little narrower in the dip (12 → 9.7 mm)
+  while the walls and the rounded top stay the same.
 
 ## 5. Reviewing and merging the branch
 Everything is on the branch **claude-fixes**. Main is untouched, and there's a version

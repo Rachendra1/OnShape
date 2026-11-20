@@ -4,7 +4,10 @@ Every piece is inserted (dividers with their DividerLength configuration) and mo
 place, so the assembly's BOM tab is the parts list. Positions: X along the south wall,
 Y along the west wall, origin = SW corner connector centre, Z up, all in mm.
 
-Usage: python3 build_assembly_onshape.py <assembly element id>
+With --lowered, every interior divider running along Y (the "vertical" lines on Trevor's sketch)
+that is long enough for a dip uses LoweredDivider / LoweredBentDivider instead.
+
+Usage: python3 build_assembly_onshape.py <assembly element id> [--lowered]
 """
 import math
 import sys
@@ -21,6 +24,9 @@ BORDER_CORNER = ("f993513148cf6725747ac8d5", "JmD")
 BENT = "1fa7ccd71f83e697f9a02a0e"
 DOUBLE_T = "1b210cf58b1f393817727634"
 STEP = "3e814082c43d9d01d0c8205f"
+LOWERED = "c1f1572e606b46cb67d4e318"        # LoweredDivider (DividerLength 56..256)
+LOWERED_BENT = "320b7d41515cdca3c53e698f"   # LoweredBentDivider
+LOWERED_MIN = 150  # only the long silverware dividers (Trevor: keep the short 56 full height)
 
 W, D = 469, 448   # far walls' connector-centre lines
 
@@ -38,13 +44,14 @@ def wall_rotation(x, y):
     raise ValueError((x, y))
 
 
-def placements():
+def placements(lowered=False):
     out = []   # (element, part, configuration, x, y, rotation, label)
     for a, b, border, note in lay.E:
         (x1, y1, _), (x2, y2, _) = lay.N[a], lay.N[b]
         if note.startswith("bent"):
             # south end on (231, 0), north end on (238, 210): straight ends 7 mm apart in X
-            out.append((BENT, only_part(BENT), "", x1, (y1 + y2) / 2, 0, "bent 196"))
+            bent = LOWERED_BENT if lowered else BENT
+            out.append((bent, only_part(bent), "", x1, (y1 + y2) / 2, 0, "bent 196"))
             continue
         L = lay.length(a, b)
         if L < lay.MIN_DIVIDER:
@@ -55,6 +62,9 @@ def placements():
             el, part = BORDER_DIVIDER
             # flat back toward the wall: south -90, north 90, west 180, east 0
             rot = (-90 if my == 0 else 90) if horizontal else (180 if mx == 0 else 0)
+        elif lowered and not horizontal and L >= LOWERED_MIN:
+            el, part = LOWERED, only_part(LOWERED)
+            rot = 0
         else:
             el, part = DIVIDER
             rot = 90 if horizontal else 0
@@ -87,10 +97,10 @@ def transform(x, y, rot_deg):
     return [c, -s, 0, x / 1000, s, c, 0, y / 1000, 0, 0, 1, 0, 0, 0, 0, 1]
 
 
-def build(asm):
+def build(asm, lowered=False):
     base = f"/assemblies/d/{DOC}/w/{BRANCH}/e/{asm}"
     groups = OrderedDict()
-    for p in placements():
+    for p in placements(lowered):
         groups.setdefault(p[:3], []).append(p)
     seen = {i["id"] for i in api("GET", base)["rootAssembly"]["instances"]}
     placed = 0
@@ -111,5 +121,5 @@ def build(asm):
 
 
 if __name__ == "__main__":
-    n = build(sys.argv[1])
+    n = build(sys.argv[1], lowered="--lowered" in sys.argv)
     print("placed", n)

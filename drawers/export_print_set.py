@@ -6,7 +6,8 @@ Includes the bent divider and the two custom connectors, which live on the
 claude-fixes branch as real Onshape parts (BentDivider, DoubleTConnector, StepConnector).
 
 Needs the Onshape key on cad.onshape.com (the cloud proxy injects it).
-Usage: python3 export_print_set.py outdir
+Usage: python3 export_print_set.py outdir              # standard layout
+       python3 export_print_set.py outdir --lowered    # layout_lowered (complete set)
 """
 import os
 import subprocess
@@ -61,7 +62,7 @@ def _stl(tab, out, length=None):
     return out
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and "--lowered" not in sys.argv:
     outdir = sys.argv[1]
     os.makedirs(outdir, exist_ok=True)
     border, inner = lay.report()
@@ -81,3 +82,29 @@ if __name__ == "__main__":
     for tab, name in jobs_named:
         stl(tab, os.path.join(outdir, name))
         print("  ", name)
+
+
+def export_from_plan(outdir, lowered):
+    """Export a complete print set straight from the assembly placement plan."""
+    import build_assembly_onshape as plan
+    from collections import Counter
+    names = {plan.DIVIDER[0]: "Divider", plan.BORDER_DIVIDER[0]: "BorderDivider",
+             plan.TCONN[0]: "TConnector", plan.BORDER_T[0]: "BorderTConnector",
+             plan.BORDER_CORNER[0]: "BorderCornerConnector", plan.BENT: "Divider_196mm_BENT",
+             plan.DOUBLE_T: "Custom_DoubleT", plan.STEP: "Custom_Step",
+             plan.LOWERED: "LoweredDivider", plan.LOWERED_BENT: "LoweredDivider_196mm_BENT"}
+    TABS.update({"LoweredDivider": plan.LOWERED, "LoweredDivider_196mm_BENT": plan.LOWERED_BENT,
+                 "Divider_196mm_BENT": plan.BENT, "Custom_DoubleT": plan.DOUBLE_T, "Custom_Step": plan.STEP})
+    os.makedirs(outdir, exist_ok=True)
+    counts = Counter((p[0], p[2]) for p in plan.placements(lowered))
+    for (el, cfg), n in sorted(counts.items(), key=lambda kv: (names[kv[0][0]], kv[0][1])):
+        tab = names[el]
+        L = int(cfg.split("=")[1].split()[0]) if cfg else None
+        name = f"{tab}_{L:03d}mm_x{n}.stl" if L else f"{tab}_x{n}.stl"
+        stl(tab, os.path.join(outdir, name), L)
+        print("  ", name)
+    return sum(counts.values())
+
+
+if __name__ == "__main__" and "--lowered" in sys.argv:
+    print("pieces:", export_from_plan(sys.argv[1], lowered=True))

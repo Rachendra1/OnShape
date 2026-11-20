@@ -222,3 +222,142 @@ export const nameByLength = defineFeature(function(context is Context, id is Id,
                     "propertyType" : PropertyType.DESCRIPTION,
                     "value" : definition.prefix ~ " " ~ toString(mm) ~ " mm" });
     });
+
+const DROP_BOUNDS =
+{
+    (meter) : [0, 0.006, 0.1],
+    (millimeter) : 6,
+    (inch) : 0.25
+} as LengthBoundSpec;
+
+const LOW_LENGTH_BOUNDS =
+{
+    (meter) : [0.001, 0.078, 1],
+    (millimeter) : 78,
+    (inch) : 3
+} as LengthBoundSpec;
+
+const RAMP_BOUNDS =
+{
+    (meter) : [0.001, 0.02, 1],
+    (millimeter) : 20,
+    (inch) : 0.75
+} as LengthBoundSpec;
+
+/**
+ * Lower middle: dips the top of a divider in the middle so things are easier to reach.
+ * Works on a divider along Y, open side down (straight or S-bent). Cuts it across at the
+ * ends of the ramps and of the low stretch, sinks the low stretch by the drop, rebuilds each
+ * ramp by sliding the divider's own cross-section down a slope, fuses everything and trims
+ * off whatever went below the floor. The ends (with the plug sockets) are untouched, the
+ * walls keep their thickness, and the top keeps its rounded shape. Ramps must be straight
+ * (outside any S-bend).
+ */
+annotation { "Feature Type Name" : "Lower middle",
+             "Feature Type Description" : "Dips the middle of a divider down by a set amount, with sloped ramps either side." }
+export const lowerMiddle = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
+    {
+        annotation { "Name" : "Divider", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
+        definition.divider is Query;
+
+        annotation { "Name" : "Drop (how much lower)" }
+        isLength(definition.drop, DROP_BOUNDS);
+
+        annotation { "Name" : "Low stretch (flat bottom of the dip)" }
+        isLength(definition.lowLength, LOW_LENGTH_BOUNDS);
+
+        annotation { "Name" : "Ramp length (each side)" }
+        isLength(definition.ramp, RAMP_BOUNDS);
+    }
+    {
+        const drop = definition.drop;
+        if (drop > 1e-6 * meter)
+        {
+            const bb = evBox3d(context, { "topology" : definition.divider, "tight" : true });
+            const yMid = (bb.minCorner[1] + bb.maxCorner[1]) / 2;
+            const y1 = definition.lowLength / 2;
+            const y2 = y1 + definition.ramp;
+            if (yMid - y2 < bb.minCorner[1] + 10 * millimeter || yMid + y2 > bb.maxCorner[1] - 10 * millimeter)
+                throw regenError("The dip plus its ramps must stay at least 10 mm from both ends (plug sockets).",
+                                 ["lowLength", "ramp"]);
+            if (drop >= bb.maxCorner[2] - bb.minCorner[2])
+                throw regenError("The drop must be less than the divider's height.", ["drop"]);
+
+            // 1. Cut across at four places: ramp start, low start, low end, ramp end.
+            const ys = [yMid - y2, yMid - y1, yMid + y1, yMid + y2];
+            var pieces = definition.divider;
+            for (var i = 0; i < 4; i += 1)
+            {
+                opPlane(context, id + ("plane" ~ i), { "plane" : plane(vector(0 * meter, ys[i], 0 * meter), vector(0, 1, 0)) });
+                opSplitPart(context, id + ("split" ~ i), {
+                            "targets" : pieces,
+                            "tool" : qCreatedBy(id + ("plane" ~ i), EntityType.FACE) });
+                pieces = qBodyType(qUnion([pieces, qCreatedBy(id + ("split" ~ i), EntityType.BODY)]), BodyType.SOLID);
+            }
+
+            var southEnd;
+            var southRamp;
+            var low;
+            var northRamp;
+            var northEnd;
+            for (var piece in evaluateQuery(context, pieces))
+            {
+                const pb = evBox3d(context, { "topology" : piece, "tight" : true });
+                const cy = (pb.minCorner[1] + pb.maxCorner[1]) / 2;
+                if (cy < ys[0])
+                    southEnd = piece;
+                else if (cy < ys[1])
+                    southRamp = piece;
+                else if (cy < ys[2])
+                    low = piece;
+                else if (cy < ys[3])
+                    northRamp = piece;
+                else
+                    northEnd = piece;
+            }
+            if (southEnd == undefined || southRamp == undefined || low == undefined || northRamp == undefined || northEnd == undefined)
+                throw regenError("Couldn't cut the divider into five pieces. Is it a divider along Y?");
+
+            // 2. Cross-sections the ramps start from: the cut faces of the two end pieces.
+            const southFace = qCoincidesWithPlane(qOwnedByBody(southEnd, EntityType.FACE),
+                                                  plane(vector(0 * meter, ys[0], 0 * meter), vector(0, 1, 0)));
+            const northFace = qCoincidesWithPlane(qOwnedByBody(northEnd, EntityType.FACE),
+                                                  plane(vector(0 * meter, ys[3], 0 * meter), vector(0, 1, 0)));
+            opDeleteBodies(context, id + "dropRamps", { "entities" : qUnion([southRamp, northRamp]) });
+
+            // 3. Sink the low stretch.
+            opTransform(context, id + "sink", { "bodies" : low, "transform" : transform(vector(0 * meter, 0 * meter, -drop)) });
+
+            // 4. Ramps: slide each end's cross-section along the slope down to the sunk piece.
+            const slope = drop / definition.ramp;
+            const rampDepth = sqrt(definition.ramp * definition.ramp + drop * drop);
+            opExtrude(context, id + "rampSouth", {
+                        "entities" : southFace,
+                        "direction" : normalize(vector(0, 1, -slope)),
+                        "endBound" : BoundingType.BLIND,
+                        "endDepth" : rampDepth });
+            opExtrude(context, id + "rampNorth", {
+                        "entities" : northFace,
+                        "direction" : normalize(vector(0, -1, -slope)),
+                        "endBound" : BoundingType.BLIND,
+                        "endDepth" : rampDepth });
+
+            // 5. Fuse, then trim off anything below the floor (Z = 0).
+            const all = qUnion([southEnd, qCreatedBy(id + "rampSouth", EntityType.BODY), low,
+                                qCreatedBy(id + "rampNorth", EntityType.BODY), northEnd]);
+            opBoolean(context, id + "fuse", { "tools" : all, "operationType" : BooleanOperationType.UNION });
+            fCuboid(context, id + "belowFloor", {
+                        "corner1" : vector(-1, -1, -1) * meter,
+                        "corner2" : vector(1 * meter, 1 * meter, bb.minCorner[2]) });
+            opBoolean(context, id + "floor", {
+                        "tools" : qCreatedBy(id + "belowFloor", EntityType.BODY),
+                        "targets" : qBodyType(all, BodyType.SOLID),
+                        "operationType" : BooleanOperationType.SUBTRACTION });
+
+            // 6. Tidy up.
+            opDeleteBodies(context, id + "cleanup", { "entities" : qUnion([
+                                qCreatedBy(id + "plane0", EntityType.BODY), qCreatedBy(id + "plane1", EntityType.BODY),
+                                qCreatedBy(id + "plane2", EntityType.BODY), qCreatedBy(id + "plane3", EntityType.BODY)]) });
+        }
+    });

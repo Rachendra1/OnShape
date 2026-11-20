@@ -66,3 +66,12 @@ python3 export_print_set.py print     # all 26 files from the claude-fixes branc
 ```
 The old mesh scripts (`make_bent_divider.py`, `make_custom_connectors.py`) still work offline as a
 fallback; they need `pip install trimesh manifold3d networkx shapely scipy`.
+
+## Lowered version (`print_lowered/`)
+Same drawer, but the 14 long interior dividers running along Y (the "vertical" ones on the sketch:
+196 x7, the bent 196, 168 x3, 154 x2, 224) dip 6 mm (30% of the 20 mm height) over their middle 40%,
+with 10% ramps either side, for easier reaching in. Border dividers, the cross-pieces and the short
+42/56 verticals stay full height. `print_lowered/` is a complete set (84 pieces); print either
+`print/` or `print_lowered/`, not both. Assembly: *Bethany's Drawer - layout_lowered*.
+In the dip the divider's base narrows from 12 mm to 9.7 mm (the cross-section is lowered and
+trimmed at the floor, so wall thickness and the rounded top stay the same).

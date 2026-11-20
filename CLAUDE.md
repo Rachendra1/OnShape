@@ -19,6 +19,9 @@ document, what is in it, and the cleanup recommendations.
 - Never delete, merge or overwrite anything in Onshape without Trevor's explicit OK.
 - STL exports redirect to `cad-usw2.onshape.com`, which the proxy blocks: re-request the same
   `/modelexport?...` path on `cad.onshape.com`. `drawers/onshape_api.py` has a small helper (with 429 backoff).
+- Exports have a **daily cap** separate from normal API calls: after ~150 STL exports in a day,
+  Onshape answers 429 with `Retry-After` of ~20 h while reads still work. Don't re-export what you
+  already have; identical parts can be copied between print sets.
 - FeatureScript: `box` is a reserved word (`const box = ...` won't compile), and the API never returns
   compile errors: an empty `/featurespecs` list means it didn't compile. Use
   `POST /partstudios/.../featurescript` with try/catch to debug runtime errors.

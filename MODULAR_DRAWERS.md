@@ -147,10 +147,18 @@ Checks: the bent divider's ends match the straight Divider exactly; volumes of t
 and step (10.72 cm3) match the mesh versions; the assembly is 474.44 x 453.44 x 20 mm; BOM = 84 pieces,
 matching the tally. How-to for Trevor: `drawers/HOWTO_ONSHAPE.md`.
 
-## Parked: lowered middle (2026-11-20)
+## Lowered middle: built 2026-11-20 (was parked)
 Trevor's old Bend tab had a "Lowered" option (dip the divider's height for easier reach). Not built;
 Trevor is moving ahead without it and may revisit. Plan if we do: a separate "Lower" custom feature
 in Drawer Features, run after the S-bend: split out the low stretch, scale it in Z only, loft short
 ramps back to full height (two same-shape sections, so the loft is reliable). Works on bent or straight
 dividers and can overlap the bend; must stay ~10 mm clear of the plug sockets. At 20 mm tall there's
 only ~6-8 mm to take off, so print a test piece first.
+
+Built on claude-fixes: FeatureScript *Lower middle* (split at 4 planes, sink the middle, extrude the
+end cross-sections down a slope as ramps, fuse, trim below the floor). Tabs **LoweredDivider**
+(`c1f1572e606b46cb67d4e318`, config DividerLength / LowerDrop 6 mm / LowFraction 0.4 / RampFraction 0.1)
+and **LoweredBentDivider** (`320b7d41515cdca3c53e698f`), assembly **Bethany's Drawer - layout_lowered**
+(`8e9ea99c9e62ead6e63a9281`): 14 lowered pieces (Trevor: not the short 56). Socket ends checked
+identical to the straight Divider. Trevor merged claude-fixes into Main once mid-build; a second
+merge is needed for the lowered assembly's contents.
