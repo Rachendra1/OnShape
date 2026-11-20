@@ -123,3 +123,26 @@ The custom connectors are just Derive (TConnector x2, or T + Corner + T) + Trans
 - Drawer **inside** width, depth and height (dividers are 20 mm tall; is that right for this drawer?).
 - Printer and bed size.
 - Any curved or lowered dividers in her design?
+
+## In Onshape: branch `claude-fixes` (2026-11-20)
+
+Trevor gave a read+write key (no delete). Version **"Before Claude edits"** (`1506cc77d0bcc2af5bb77e0f`)
+snapshots Main; branch **claude-fixes** (`6dcc85354eb72817400f9cdc`) was made from it. Main is untouched.
+
+New tabs:
+| Tab | What |
+|---|---|
+| Drawer Features (`58af070e0f8fa80c5afd624e`) | FeatureScript: *S-bend divider*, *Place body*, *Name by length*. Source: `drawers/featurescript/drawer_features.fs` |
+| BentDivider (`1fa7ccd71f83e697f9a02a0e`) | Derive Divider at `#DividerLength` + S-bend. Config: DividerLength 196, JogOffset 7, JogLength 49, JogCenter 0 |
+| DoubleTConnector (`1b210cf58b1f393817727634`) | Two TConnectors fused, 14 mm apart |
+| StepConnector (`3e814082c43d9d01d0c8205f`) | T + Corner + T + 11 mm of StraightConnector body, fused |
+| Bethany's Drawer - full layout (`d443a2aa4b2739f515fb9cea`) | All 84 pieces placed; its BOM is the print list |
+| UNUSED - delete me (`ff38775265297f884e35f017`) | Failed first try at the double T; key can't delete it |
+
+Changed tabs (one feature added at the end of each):
+- Divider, BorderDivider: *Name by length* (part Description = "Divider 42 mm" etc.)
+- BorderTConnector: *Fuse into one part* (was two solids: BDTConnector + StraightHalf)
+
+Checks: the bent divider's ends match the straight Divider exactly; volumes of the double T (7.39 cm3)
+and step (10.72 cm3) match the mesh versions; the assembly is 474.44 x 453.44 x 20 mm; BOM = 84 pieces,
+matching the tally. How-to for Trevor: `drawers/HOWTO_ONSHAPE.md`.

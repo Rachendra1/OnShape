@@ -43,7 +43,12 @@ standing the right way up (open side down, as drawn in Onshape).
 | **Custom_DoubleT_x1** | 1 (the "TT" spot) |
 | **Custom_Step_x1** | 1 (the "T L T" spot) |
 
-## How the three new pieces were made
+## Where the files come from
+Since 2026-11-20 every file, including the three new pieces, is exported from Onshape
+(branch `claude-fixes`). The BOM of *Bethany's Drawer - full layout* lists the same 84 pieces.
+`BorderTConnector` is now one fused part (before, the file held two overlapping solids; same shape).
+
+## How the three new pieces were first made (mesh versions, superseded)
 - **Bent 196**: the Onshape 196 divider, sliced across its middle 49 mm and each slice slid
   sideways along a smooth S-curve (`make_bent_divider.py`). Both ends, including the plug
   sockets, are untouched (checked: 0.000 mm difference). The steepest part of the jog is 12.6°,
@@ -57,8 +62,7 @@ standing the right way up (open side down, as drawn in Onshape).
 
 ## Rebuilding
 ```
-python3 export_print_set.py print          # standard parts from Onshape (needs the API key)
-python make_bent_divider.py print/_sources/Divider_196mm.stl print/Divider_196mm_BENT_x1.stl
-python make_custom_connectors.py print/_sources/TConnector.stl print/_sources/CornerConnector.stl print/_sources/StraightConnector.stl print
+python3 export_print_set.py print     # all 26 files from the claude-fixes branch (needs the API key)
 ```
-The last two need `pip install trimesh manifold3d networkx shapely scipy`.
+The old mesh scripts (`make_bent_divider.py`, `make_custom_connectors.py`) still work offline as a
+fallback; they need `pip install trimesh manifold3d networkx shapely scipy`.

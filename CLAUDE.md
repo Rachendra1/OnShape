@@ -6,16 +6,22 @@ document, what is in it, and the cleanup recommendations.
 
 ## Talking to Onshape
 
-- An Onshape API key (read-only, Basic auth) is saved as a network secret on this
-  cloud environment for `cad.onshape.com`. The proxy injects it automatically.
-  Do **not** add an Authorization header yourself; plain `curl` works:
+- An Onshape API key (Basic auth) is saved as a network secret on this cloud environment for
+  `cad.onshape.com`. The proxy injects it automatically. Do **not** add an Authorization header yourself;
+  plain `curl` works:
   ```bash
   curl -sS -H "Accept: application/json" "https://cad.onshape.com/api/v10/users/sessioninfo"
   ```
   401 `invalid_token` means the secret is wrong or was saved as Bearer instead of Basic.
-- The key is **read-only**. Do not attempt writes; propose changes for Trevor to make
-  in Onshape (or ask him for a write-enabled key).
+- Since 2026-11-20 the key can **read and write, but not delete** (Trevor's choice). DELETE calls return 403.
+- Make changes on a **branch**, never directly in Main, and save a Version of Main first.
+  The drawer work is on branch `claude-fixes` (see `MODULAR_DRAWERS.md`). Trevor reviews and merges.
 - Never delete, merge or overwrite anything in Onshape without Trevor's explicit OK.
+- STL exports redirect to `cad-usw2.onshape.com`, which the proxy blocks: re-request the same
+  `/modelexport?...` path on `cad.onshape.com`. `drawers/onshape_api.py` has a small helper (with 429 backoff).
+- FeatureScript: `box` is a reserved word (`const box = ...` won't compile), and the API never returns
+  compile errors: an empty `/featurespecs` list means it didn't compile. Use
+  `POST /partstudios/.../featurescript` with try/catch to debug runtime errors.
 - Gulbasaurus (and anything else of Enna's) is off-limits: no changes or cleanup suggestions.
 
 ## Useful endpoints (base `https://cad.onshape.com/api/v10`)

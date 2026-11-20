@@ -2,8 +2,8 @@
 
 Lengths and counts come from bethany_layout.py. Files are named
 <part>_<length>mm_x<count>.stl so the count to print is in the name.
-The bent divider and the two custom connectors are made afterwards by
-make_bent_divider.py and make_custom_connectors.py (see PRINT_LIST.md).
+Includes the bent divider and the two custom connectors, which live on the
+claude-fixes branch as real Onshape parts (BentDivider, DoubleTConnector, StepConnector).
 
 Needs the Onshape key on cad.onshape.com (the cloud proxy injects it).
 Usage: python3 export_print_set.py outdir
@@ -18,7 +18,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 import bethany_layout as lay  # noqa: E402
 
 API = "https://cad.onshape.com/api/v10"
-DOC, WS = "c1f3594b6f062bbce36ab673", "2d7ff63b0b4fd88af2740cb5"   # ModularDrawers - Claude, Main
+DOC = "c1f3594b6f062bbce36ab673"   # ModularDrawers - Claude
+WS = "6dcc85354eb72817400f9cdc"    # branch claude-fixes (Main: 2d7ff63b0b4fd88af2740cb5)
 TABS = {
     "Divider": "4f8fb15c91ad1c175b9a5d84",
     "BorderDivider": "df79b83aac218b3a10e96317",
@@ -27,6 +28,9 @@ TABS = {
     "BorderCornerConnector": "f993513148cf6725747ac8d5",
     "CornerConnector": "2c99d26bfc8c518fb3d7cbd9",
     "StraightConnector": "9f42ed33e5dc6d6a6e44d5e7",
+    "BentDivider": "1fa7ccd71f83e697f9a02a0e",
+    "DoubleTConnector": "1b210cf58b1f393817727634",
+    "StepConnector": "3e814082c43d9d01d0c8205f",
 }
 
 
@@ -68,13 +72,12 @@ if __name__ == "__main__":
     jobs += [("Divider", L, n) for L, n in sorted(inner.items()) if n]
     jobs += [("BorderCornerConnector", None, kinds["BL"]), ("BorderTConnector", None, kinds["BT"]),
              ("TConnector", None, kinds["T"])]
+    jobs_named = [("BentDivider", "Divider_196mm_BENT_x1.stl"), ("DoubleTConnector", "Custom_DoubleT_x1.stl"),
+                  ("StepConnector", "Custom_Step_x1.stl")]
     for tab, L, n in jobs:
         name = f"{tab}_{L:03d}mm_x{n}.stl" if L else f"{tab}_x{n}.stl"
         stl(tab, os.path.join(outdir, name), L)
         print("  ", name)
-    # sources for the custom pieces
-    src = os.path.join(outdir, "_sources")
-    os.makedirs(src, exist_ok=True)
-    stl("Divider", os.path.join(src, "Divider_196mm.stl"), 196)
-    for tab in ("TConnector", "CornerConnector", "StraightConnector"):
-        stl(tab, os.path.join(src, f"{tab}.stl"))
+    for tab, name in jobs_named:
+        stl(tab, os.path.join(outdir, name))
+        print("  ", name)
