@@ -48,7 +48,7 @@ Otherwise keep both and rename them clearly.
 |---|---|---|---|---|
 | Template - Drills | `5701b1312b7fbdbe4e0193b5` | 2026-01-12 | Start, V1, V2, V3 | ⚠️ **Branch `B1` (edited 01-12) is newer than `Main` (01-09).** Work may be stranded on B1; review and merge into Main. Contents are drawer and door handles/knobs, so the name doesn't fit; consider renaming |
 | MakaylasPresent | `74ad69d9b4bf0ff703752d44` | 2025-12-19 | Start, V3, V4 | 1 part, 2 drawings, variables. Looks finished |
-| Kuggis Shelf | `42847d9d152b50fb60843d72` | 2025-11-06 | Start, V1 | Small and Large inserts with stacked assemblies |
+| Kuggis Shelf | `42847d9d152b50fb60843d72` | 2026-11-20 | Start, V1, V1.1 | Small and Large inserts. Made print-ready 2026-11-20; see `KUGGIS.md` |
 | Boomer phone stand - Copy | `bf1bd8d19d5b57a5b086aaaf` | 2025-12-19 | Start | Copy of someone else's public doc (original isn't Trevor's); rename it to drop "- Copy" |
 
 ## Throwaway / empty: archive or delete
